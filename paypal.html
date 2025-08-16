@@ -1,0 +1,47 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>PayPal Checkout</title>
+<style>
+    html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #f0f0f0;
+    }
+    #paypal-button-container {
+        width: 90%;        /* zauzima skoro ceo ekran */
+        max-width: 800px;  /* opcionalno */
+        margin: 0 auto;    /* horizontalno centriranje unutar flex kontejnera */
+    }
+</style>
+<script src="https://www.paypal.com/sdk/js?client-id=ASbrNnVI8e6nUP2Ae1XjFAvbMP9SQFheTnsFE5g2pruu9jH_9nR1n_SJY0NTGwAX12rFm5pW6cdAe-jw&currency=EUR"></script>
+</head>
+<body>
+    <div id="paypal-button-container" style="width: 90%; max-width: 800px; margin: 0 auto; text-align: center;"></div>
+
+<script>
+paypal.Buttons({
+    createOrder: function(data, actions) {
+        return actions.order.create({
+            purchase_units: [{
+                amount: { value: '0.99' } // cena
+            }]
+        });
+    },
+    onApprove: function(data, actions) {
+        return actions.order.capture().then(function(details) {
+            // pošalji poruku SwiftUI-u
+            window.webkit.messageHandlers.paymentSuccess.postMessage(JSON.stringify(details));
+        });
+    }
+}).render('#paypal-button-container');
+</script>
+</body>
+</html>
